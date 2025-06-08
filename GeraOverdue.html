@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Comunicado de Overdue</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .menu-item.active {
+            background-color: #1e5a1f;
+        }
+
+        .menu-item:hover {
+            background-color: #2c8a2d;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #257226;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e5a1f;
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+
+        .tab-active {
+            border-bottom-color: #257226;
+            color: #257226;
+            font-weight: 500;
+        }
+
+        .tab {
+            border-bottom: 2px solid transparent;
+        }
+
+        .dropdown-item:hover {
+            background-color: #e9f3e9;
+        }
+
+        .copy-feedback {
+            display: none;
+            color: #257226;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        textarea[readonly] {
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex h-screen">
+        <!-- Menu lateral -->
+        <aside class="w-64 bg-[#257226] text-white flex flex-col rounded-r-xl shadow-lg">
+            <div class="p-6 text-2xl font-semibold border-b border-white/20">Menu</div>
+            <nav class="flex-grow p-4 space-y-2">
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/index.html">
+                    <span class="material-icons mr-3">home</span>
+                    Início
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/easyCrq-main/index.html">
+                    <span class="material-icons mr-3">description</span>
+                    Leitor de CRQ
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/GeraComunicado.html">
+                    <span class="material-icons mr-3">forum</span>
+                    Gerador de Comunicado
+                </a>
+                <a class="menu-item active flex items-center px-4 py-3 rounded-lg bg-[#1e5a1f] transition-colors"
+                    href="/GeraOverdue.html">
+                    <span class="material-icons mr-3">warning</span>
+                    Gerador de Overdue
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/relatorioOverdue/index.html">
+                    <span class="material-icons mr-3">summarize</span>
+                    Relatório de Overdue
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/LocalizadorJobRelatorio.html">
+                    <span class="material-icons mr-3">search</span>
+                    Localiza Jobs no relatório
+                </a>
+            </nav>
+        </aside>
+        <main class="flex-1 p-8">
+            <div class="bg-white p-8 rounded-xl shadow-xl max-w-5xl mx-auto">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Comunicado de Overdue</h1>
+                <div class="mb-6">
+                    <label for="input" class="block font-medium text-gray-700 mb-2">Entrada:</label>
+                    <textarea id="input"
+                        class="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#257226] focus:border-[#257226] resize-y text-gray-700"
+                        placeholder="Cole os dados dos jobs aqui..."></textarea>
+                </div>
+                <div class="flex items-center mb-6 space-x-3">
+                    <button class="btn btn-primary flex items-center" onclick="formatData()">
+                        <span class="material-icons mr-2 text-sm">format_paint</span>
+                        Formatar Dados
+                    </button>
+                    <button class="btn btn-primary flex items-center" onclick="copyOutput()">
+                        <span class="material-icons mr-2 text-sm">content_copy</span>
+                        Copiar Resultado
+                    </button>
+                    <span id="copyFeedback" class="copy-feedback">Copiado!</span>
+                </div>
+                <div>
+                    <label for="output" class="block font-medium text-gray-700 mb-2">Saída:</label>
+                    <textarea id="output"
+                        class="w-full h-64 p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 resize-y"
+                        readonly></textarea>
+                </div>
+            </div>
+
+            <footer class="w-full mt-8 text-center">
+                <small class="text-gray-400">Desenvolvido por Guilherme Godoy - © 2024</small>
+            </footer>
+
+        </main>
+    </div>
+    <script>
+        function formatSingleJob(jobData) {
+            const lines = jobData.split('\n');
+            const data = {
+                jobName: '',
+                startTime: '',
+                processingTime: ''
+            };
+
+            for (const line of lines) {
+                if (line.trim().startsWith('Job Name')) {
+                    data.jobName = line.split('Job Name')[1].trim();
+                }
+                if (line.trim().startsWith('Start Time')) {
+                    data.startTime = line.split('Start Time')[1].trim();
+                }
+                if (line.includes('Overdue if execution time exceeds')) {
+                    data.processingTime = line.match(/\d+/)[0];
+                }
+            }
+
+            const formattedStartTime = data.startTime.replace('BRT', '- BRT');
+
+            return [
+                `Número do incidente:`,
+                `Descrição da ocorrência: *O JOB ${data.jobName} está em OVERDUE.*`,
+                `Start Time: *${formattedStartTime}*`,
+                `Tempo de processamento (minutos): ${data.processingTime}.`,
+                `Equipe responsável:`
+            ].join('\n');
+        }
+
+        function formatJobData(inputData) {
+            const jobSections = inputData.split('Field Value').filter(section => section.trim());
+            return jobSections.map(jobSection => formatSingleJob(jobSection)).join('\n\n');
+        }
+
+        function formatData() {
+            const input = document.getElementById('input');
+            const output = document.getElementById('output');
+
+            if (!input.value.trim()) {
+                output.value = 'Por favor, insira os dados do job.';
+                return;
+            }
+
+            try {
+                const formattedData = formatJobData(input.value);
+                output.value = formattedData;
+                input.style.color = 'rgba(0, 0, 0, 1)';
+            } catch (error) {
+                output.value = 'Erro ao processar os dados. Verifique se o formato está correto.';
+            }
+        }
+
+        function copyOutput() {
+            const output = document.getElementById('output');
+            const feedback = document.getElementById('copyFeedback');
+
+            if (output.value) {
+                output.select();
+                document.execCommand('copy');
+
+                feedback.style.display = 'inline';
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Usiminas - Ferramentas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .menu-card:hover {
+            background-color: #e9fbe9;
+            box-shadow: 0 4px 24px 0 rgba(37, 114, 38, 0.10);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="min-h-screen flex flex-col bg-[#f0f4f8]">
+        <header class="w-full bg-[#257226] py-6 shadow-md">
+            <div class="max-w-5xl mx-auto flex items-center gap-4 px-4">
+                <span class="material-icons text-white text-4xl">dashboard</span>
+                <h1 class="text-2xl md:text-3xl font-bold text-white">Painel Usiminas - Ferramentas</h1>
+            </div>
+        </header>
+        <main class="flex-1 flex flex-col items-center justify-center px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 max-w-5xl w-full">
+                <a href="/easyCrq-main/index.html"
+                    class="menu-card flex flex-col items-center p-8 bg-white rounded-xl shadow transition hover:scale-105 text-center">
+                    <span class="material-icons text-[#257226] text-5xl mb-4">description</span>
+                    <span class="font-semibold text-lg mb-1">Leitor de CRQ</span>
+                    <span class="text-gray-500 text-sm">Processa planilhas de mudanças CRQ</span>
+                </a>
+                <a href="/GeraComunicado.html"
+                    class="menu-card flex flex-col items-center p-8 bg-white rounded-xl shadow transition hover:scale-105 text-center">
+                    <span class="material-icons text-[#257226] text-5xl mb-4">forum</span>
+                    <span class="font-semibold text-lg mb-1">Gerador de Comunicado</span>
+                    <span class="text-gray-500 text-sm">Gera comunicados automáticos</span>
+                </a>
+                <a href="/GeraOverdue.html"
+                    class="menu-card flex flex-col items-center p-8 bg-white rounded-xl shadow transition hover:scale-105 text-center">
+                    <span class="material-icons text-[#257226] text-5xl mb-4">warning</span>
+                    <span class="font-semibold text-lg mb-1">Gerador de Overdue</span>
+                    <span class="text-gray-500 text-sm">Comunicados de jobs em overdue</span>
+                </a>
+                <a href="/relatorioOverdue/index.html"
+                    class="menu-card flex flex-col items-center p-8 bg-white rounded-xl shadow transition hover:scale-105 text-center">
+                    <span class="material-icons text-[#257226] text-5xl mb-4">summarize</span>
+                    <span class="font-semibold text-lg mb-1">Relatório de Overdue</span>
+                    <span class="text-gray-500 text-sm">Análise e gráficos de jobs</span>
+                </a>
+                <a href="/LocalizadorJobRelatorio.html"
+                    class="menu-card flex flex-col items-center p-8 bg-white rounded-xl shadow transition hover:scale-105 text-center">
+                    <span class="material-icons text-[#257226] text-5xl mb-4">search</span>
+                    <span class="font-semibold text-lg mb-1">Localiza Jobs no relatório</span>
+                    <span class="text-gray-500 text-sm">Busca e compara nomes de jobs</span>
+                </a>
+            </div>
+        </main>
+        <footer class="w-full mt-12 mb-4 text-center">
+            <small class="text-gray-400">Desenvolvido por Guilherme Godoy - © 2024</small>
+        </footer>
+    </div>
+</body>
+
+</html>

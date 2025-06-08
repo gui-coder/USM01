@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Localizador e Comparador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .menu-item.active {
+            background-color: #1e5a1f;
+        }
+
+        .menu-item:hover {
+            background-color: #2c8a2d;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #257226;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e5a1f;
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+
+        .tab-active {
+            border-bottom-color: #257226;
+            color: #257226;
+            font-weight: 500;
+        }
+
+        .tab {
+            border-bottom: 2px solid transparent;
+        }
+
+        .dropdown-item:hover {
+            background-color: #e9f3e9;
+        }
+
+        input,
+        select {
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            padding: 10px 14px;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #257226;
+            outline: none;
+        }
+
+        label {
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .output-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-top: 15px;
+            font-family: 'Roboto Mono', monospace;
+            color: #2c3e50;
+            min-height: 40px;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                padding: 8px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex h-screen">
+        <!-- Menu lateral -->
+        <aside class="w-64 bg-[#257226] text-white flex flex-col rounded-r-xl shadow-lg">
+            <div class="p-6 text-2xl font-semibold border-b border-white/20">Menu</div>
+            <nav class="flex-grow p-4 space-y-2">
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/PaginaInicial.html">
+                    <span class="material-icons mr-3">home</span>
+                    Início
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/easyCrq-main/index.html">
+                    <span class="material-icons mr-3">description</span>
+                    Leitor de CRQ
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/GeraComunicado.html">
+                    <span class="material-icons mr-3">forum</span>
+                    Gerador de Comunicado
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/GeraOverdue.html">
+                    <span class="material-icons mr-3">warning</span>
+                    Gerador de Overdue
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/relatorioOverdue/index.html">
+                    <span class="material-icons mr-3">summarize</span>
+                    Relatório de Overdue
+                </a>
+                <a class="menu-item active flex items-center px-4 py-3 rounded-lg bg-[#1e5a1f] transition-colors"
+                    href="/LocalizadorJobRelatorio.html">
+                    <span class="material-icons mr-3">search</span>
+                    Localiza Jobs no relatório
+                </a>
+            </nav>
+        </aside>
+        <!-- Conteúdo Principal -->
+        <main class="flex-1 p-8">
+            <div class="bg-white p-8 rounded-xl shadow-xl max-w-3xl mx-auto">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Localizador e Comparador de Nomes</h1>
+
+                <div class="mb-8">
+                    <h2 class="text-xl font-semibold text-[#257226] mb-4">1. Localizar Nome no Relatório</h2>
+                    <form id="locatorForm" class="mb-4">
+                        <label for="itemName">Nome do item (Ex: GEABUS009):</label>
+                        <input type="text" id="itemName" name="itemName" required>
+
+                        <label for="totalPages">Total de páginas do relatório:</label>
+                        <input type="number" id="totalPages" name="totalPages" required>
+
+                        <button type="button" class="btn btn-primary mt-2" onclick="findItemPage()">Localizar</button>
+                    </form>
+                    <div id="result" class="output-box"></div>
+                </div>
+
+                <div>
+                    <h2 class="text-xl font-semibold text-[#257226] mb-4">2. Comparar Nomes em Ordem Alfabética</h2>
+                    <form id="comparatorForm" class="mb-4">
+                        <label for="name1">Nome 1:</label>
+                        <input type="text" id="name1" name="name1" required>
+
+                        <label for="name2">Nome 2:</label>
+                        <input type="text" id="name2" name="name2" required>
+
+                        <button type="button" class="btn btn-primary mt-2" onclick="compareNames()">Comparar</button>
+                    </form>
+                    <div id="comparisonResult" class="output-box"></div>
+                </div>
+            </div>
+
+            <footer class="w-full mt-8 text-center">
+                <small class="text-gray-400">Desenvolvido por Guilherme Godoy - © 2024</small>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        function findItemPage() {
+            const itemName = document.getElementById('itemName').value.trim().toUpperCase();
+            const totalPages = parseInt(document.getElementById('totalPages').value);
+
+            if (!itemName || isNaN(totalPages) || totalPages <= 0) {
+                document.getElementById('result').textContent = "Por favor, insira valores válidos.";
+                return;
+            }
+
+            const firstLetter = itemName[0];
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const letterIndex = alphabet.indexOf(firstLetter);
+
+            if (letterIndex === -1) {
+                document.getElementById('result').textContent = "O nome deve começar com uma letra do alfabeto.";
+                return;
+            }
+
+            const pagesPerLetter = totalPages / alphabet.length;
+            const startPage = Math.floor(letterIndex * pagesPerLetter) + 1;
+            const endPage = Math.floor((letterIndex + 1) * pagesPerLetter);
+
+            document.getElementById('result').textContent =
+                `O nome "${itemName}" está provavelmente entre as páginas ${startPage} e ${endPage}.`;
+        }
+
+        function compareNames() {
+            const name1 = document.getElementById('name1').value.trim().toUpperCase();
+            const name2 = document.getElementById('name2').value.trim().toUpperCase();
+
+            if (!name1 || !name2) {
+                document.getElementById('comparisonResult').textContent = "Por favor, insira os dois nomes.";
+                return;
+            }
+
+            if (name1 < name2) {
+                document.getElementById('comparisonResult').textContent = `"${name1}" vem antes de "${name2}" em ordem alfabética.`;
+            } else if (name1 > name2) {
+                document.getElementById('comparisonResult').textContent = `"${name2}" vem antes de "${name1}" em ordem alfabética.`;
+            } else {
+                document.getElementById('comparisonResult').textContent = `"${name1}" e "${name2}" são iguais.`;
+            }
+        }
+    </script>
+</body>
+
+</html>

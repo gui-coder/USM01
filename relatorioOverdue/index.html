@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Análise de Jobs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="flex h-screen">
+        <!-- Menu lateral -->
+        <aside class="w-64 bg-[#257226] text-white flex flex-col rounded-r-xl shadow-lg">
+            <div class="p-6 text-2xl font-semibold border-b border-white/20">Menu</div>
+            <nav class="flex-grow p-4 space-y-2">
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/index.html">
+                    <span class="material-icons mr-3">home</span>
+                    Início
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/easyCrq-main/index.html">
+                    <span class="material-icons mr-3">description</span>
+                    Leitor de CRQ
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/GeraComunicado.html">
+                    <span class="material-icons mr-3">forum</span>
+                    Gerador de Comunicado
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/GeraOverdue.html">
+                    <span class="material-icons mr-3">warning</span>
+                    Gerador de Overdue
+                </a>
+                <a class="menu-item active flex items-center px-4 py-3 rounded-lg bg-[#1e5a1f] transition-colors"
+                    href="/relatorioOverdue/index.html">
+                    <span class="material-icons mr-3">summarize</span>
+                    Relatório de Overdue
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/LocalizadorJobRelatorio.html">
+                    <span class="material-icons mr-3">search</span>
+                    Localiza Jobs no relatório
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <main class="flex-1 p-8">
+            <div class="bg-white p-8 rounded-xl shadow-xl max-w-5xl mx-auto">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Análise de Jobs</h1>
+                <div class="flex flex-col md:flex-row md:items-end md:space-x-4 mb-8">
+                    <input type="file" id="fileInput" multiple accept=".xlsx,.xls"
+                        class="mb-4 md:mb-0 flex-1 border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-[#257226] focus:border-[#257226]" />
+                    <button id="processButton"
+                        class="mb-2 md:mb-0 flex items-center justify-center px-6 py-3 rounded-lg bg-[#257226] text-white font-semibold shadow hover:bg-[#2c8a2d] transition-colors mr-2">
+                        <span class="material-icons mr-2">play_arrow</span> Processar
+                    </button>
+                    <button id="clearButton"
+                        class="flex items-center justify-center px-6 py-3 rounded-lg bg-white text-[#257226] font-semibold border border-[#257226] shadow hover:bg-gray-100 transition-colors">
+                        <span class="material-icons mr-2">clear</span> Limpar Gráficos
+                    </button>
+                </div>
+                <div id="debugInfo" class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+                    <h3 class="text-lg font-semibold mb-2 text-[#257226]">Informações de Debug</h3>
+                </div>
+                <div id="errorLog" class="text-red-600 mb-4"></div>
+                <div class="grid grid-cols-1 gap-6 charts-container">
+                    <div class="chart-wrapper bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-[#257226]">Gráfico de Overdue</h3>
+                            <div class="flex gap-2">
+                                <button class="resize-btn" data-chart="overdueChart" data-action="decrease">
+                                    <span class="material-icons text-[#257226]">remove</span>
+                                </button>
+                                <button class="resize-btn" data-chart="overdueChart" data-action="increase">
+                                    <span class="material-icons text-[#257226]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container h-[400px]">
+                            <canvas id="overdueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-[#257226]">Gráfico de Duração</h3>
+                            <div class="flex gap-2">
+                                <button class="resize-btn" data-chart="durationChart" data-action="decrease">
+                                    <span class="material-icons text-[#257226]">remove</span>
+                                </button>
+                                <button class="resize-btn" data-chart="durationChart" data-action="increase">
+                                    <span class="material-icons text-[#257226]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container h-[400px]">
+                            <canvas id="durationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-semibold text-[#257226]">Gráfico de Variação</h3>
+                            <div class="flex gap-2">
+                                <button class="resize-btn" data-chart="variationChart" data-action="decrease">
+                                    <span class="material-icons text-[#257226]">remove</span>
+                                </button>
+                                <button class="resize-btn" data-chart="variationChart" data-action="increase">
+                                    <span class="material-icons text-[#257226]">add</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="chart-container h-[400px]">
+                            <canvas id="variationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="w-full mt-8 text-center">
+                <small class="text-gray-400">Desenvolvido por Guilherme Godoy - © 2024</small>
+            </footer>
+
+        </main>
+    </div>
+    <!-- Importar o arquivo principal como módulo -->
+    <script type="module" src="./js/main.js"></script>
+</body>
+
+</html>
+
+<script>
+    function limparComunicadoFormal(comunicadoFormal) {
+        // Remove asteriscos e todos os emojis usados no template
+        return comunicadoFormal
+            .replace(/\*/g, '')
+            .replace(/[🟡✅🟠🚨📍⏳]/g, '');
+    }
+</script>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Leitor de CRQs - Processamento eficiente de planilhas de mudanças">
+    <meta name="theme-color" content="#0d6efd">
+
+    <title>Leitor de CRQs</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+
+    <!-- Fontes e ícones -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .menu-item.active {
+            background-color: #1e5a1f;
+        }
+
+        .menu-item:hover {
+            background-color: #2c8a2d;
+        }
+
+        .menu-lateral {
+            width: 256px;
+            background-color: #257226;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            border-top-right-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+            box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.10);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .menu-lateral h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            padding: 1.5rem 0 1rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            margin-bottom: 0;
+        }
+
+        .menu-lateral nav {
+            flex-grow: 1;
+            padding: 1.5rem 0 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-lateral a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            gap: 0.75rem;
+            transition: background 0.2s;
+        }
+
+        .menu-lateral a .material-icons {
+            font-size: 1.5rem;
+            margin-right: 0.75rem;
+            opacity: 0.85;
+        }
+
+        .menu-lateral a.active,
+        .menu-lateral a:active {
+            background-color: #1e5a1f;
+        }
+
+        .menu-lateral a:hover {
+            background-color: #2c8a2d;
+        }
+
+        .conteudo {
+            flex: 1;
+            padding: 0;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex h-screen">
+        <!-- Menu Lateral -->
+        <aside class="menu-lateral">
+            <h2>Menu</h2>
+            <nav>
+                <a href="/index.html" class="menu-item flex items-center">
+                    <span class="material-icons">home</span>
+                    Início
+                </a>
+                <a href="/easyCrq-main/index.html" class="menu-item active flex items-center">
+                    <span class="material-icons">description</span>
+                    Leitor de CRQ
+                </a>
+                <a href="/GeraComunicado.html" class="menu-item flex items-center">
+                    <span class="material-icons">forum</span>
+                    Gerador de Comunicado
+                </a>
+                <a href="/GeraOverdue.html" class="menu-item flex items-center">
+                    <span class="material-icons">warning</span>
+                    Gerador de Overdue
+                </a>
+                <a href="/relatorioOverdue/index.html" class="menu-item flex items-center">
+                    <span class="material-icons">summarize</span>
+                    Relatorio de Overdue
+                </a>
+                <a href="/LocalizadorJobRelatorio.html" class="menu-item flex items-center">
+                    <span class="material-icons">search</span>
+                    Localiza Jobs no relatório
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <div class="conteudo flex-1 flex flex-col">
+            <!-- Header -->
+            <header class="app-header">
+                <nav class="flex items-center justify-between bg-white shadow-sm px-6 py-3 rounded-b-xl">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-file-excel text-success text-2xl"></i>
+                        <span class="text-xl font-semibold text-[#257226]">Leitor de CRQs</span>
+                    </div>
+                    <button id="themeToggle"
+                        class="border border-gray-300 rounded px-3 py-1 text-gray-600 hover:bg-gray-100 transition">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </nav>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 py-4 overflow-auto">
+                <div class="max-w-5xl mx-auto">
+                    <!-- Progress Section -->
+                    <div class="progress-section mb-4 hidden" id="progressSection">
+                        <div class="flex justify-between items-center mb-2">
+                            <span id="progressStatus">Processando...</span>
+                            <span id="progressPercentage">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded h-2">
+                            <div class="bg-[#257226] h-2 rounded transition-all duration-300" id="progressBar"
+                                style="width:0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Section -->
+                    <section class="upload-section mb-4">
+                        <div class="bg-white rounded-xl shadow p-6">
+                            <div class="upload-area p-5 border-2 border-dashed border-gray-300 rounded-lg text-center transition hover:border-[#257226] hover:bg-gray-50"
+                                id="dropZone">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                <h4 class="mb-3">Arraste os arquivos aqui ou</h4>
+                                <input type="file" id="fileInput" accept=".xlsx" multiple class="hidden"
+                                    aria-label="Selecionar arquivos">
+                                <button
+                                    class="bg-[#257226] hover:bg-[#1e5a1f] text-white font-medium px-4 py-2 rounded transition"
+                                    onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-folder-open mr-2"></i>
+                                    Selecionar Arquivos
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- File List -->
+                    <section id="fileList" class="file-list mb-4">
+                        <!-- Arquivos serão listados aqui -->
+                    </section>
+
+                    <!-- Actions -->
+                    <section class="actions mb-4 hidden" id="actionButtons">
+                        <div class="flex gap-2">
+                            <button id="exportExcel"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded flex items-center gap-2 transition">
+                                <i class="fas fa-file-excel"></i>
+                                Exportar Excel
+                            </button>
+                            <button id="exportPDF"
+                                class="bg-red-600 hover:bg-red-700 text-white font-medium px-4 py-2 rounded flex items-center gap-2 transition">
+                                <i class="fas fa-file-pdf"></i>
+                                Exportar PDF
+                            </button>
+                            <button id="clearResults"
+                                class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium px-4 py-2 rounded flex items-center gap-2 transition">
+                                <i class="fas fa-trash"></i>
+                                Limpar
+                            </button>
+                        </div>
+                    </section>
+
+                    <!-- Results -->
+                    <div class="bg-white rounded-xl shadow p-6 border border-gray-200 mb-8">
+                        <section id="results" class="results-container space-y-4">
+                            <!-- Resultados serão inseridos aqui -->
+                        </section>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer class="w-full mt-8 text-center">
+                <small class="text-gray-400">Desenvolvido por Guilherme Godoy - © 2024</small>
+            </footer>
+
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div class="fixed bottom-0 right-0 p-3 z-50 space-y-2" id="toastContainer">
+        <!-- Notificações serão inseridas aqui -->
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-90 flex justify-center items-center z-50 hidden">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-[#257226] border-opacity-50"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

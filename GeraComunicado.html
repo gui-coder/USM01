@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Gerador de Comunicado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+        }
+
+        .menu-item.active {
+            background-color: #1e5a1f;
+        }
+
+        .menu-item:hover {
+            background-color: #2c8a2d;
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #257226;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e5a1f;
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+
+        .tab-active {
+            border-bottom-color: #257226;
+            color: #257226;
+            font-weight: 500;
+        }
+
+        .tab {
+            border-bottom: 2px solid transparent;
+        }
+
+        .dropdown-item:hover {
+            background-color: #e9f3e9;
+        }
+
+        textarea[readonly] {
+            background: transparent;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="flex h-screen">
+        <!-- Menu lateral -->
+        <aside class="w-64 bg-[#257226] text-white flex flex-col rounded-r-xl shadow-lg">
+            <div class="p-6 text-2xl font-semibold border-b border-white/20">Menu</div>
+            <nav class="flex-grow p-4 space-y-2">
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/index.html">
+                    <span class="material-icons mr-3">home</span>
+                    Início
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/easyCrq-main/index.html">
+                    <span class="material-icons mr-3">description</span>
+                    Leitor de CRQ
+                </a>
+                <a class="menu-item active flex items-center px-4 py-3 rounded-lg bg-[#1e5a1f] transition-colors"
+                    href="/GeraComunicado.html">
+                    <span class="material-icons mr-3">forum</span>
+                    Gerador de Comunicado
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/GeraOverdue.html">
+                    <span class="material-icons mr-3">warning</span>
+                    Gerador de Overdue
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/relatorioOverdue/index.html">
+                    <span class="material-icons mr-3">summarize</span>
+                    Relatório de Overdue
+                </a>
+                <a class="menu-item flex items-center px-4 py-3 rounded-lg hover:bg-[#2c8a2d] transition-colors"
+                    href="/LocalizadorJobRelatorio.html">
+                    <span class="material-icons mr-3">search</span>
+                    Localiza Jobs no relatório
+                </a>
+            </nav>
+        </aside>
+        <main class="flex-1 p-8">
+            <div class="bg-white p-8 rounded-xl shadow-xl max-w-5xl mx-auto">
+                <h1 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Gerador de Comunicado</h1>
+                <div class="mb-4">
+                    <textarea id="inputText"
+                        class="w-full h-32 p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#257226] focus:border-[#257226] resize-y text-gray-700"
+                        placeholder="Cole o texto aqui para formatar..."></textarea>
+                    <div class="text-right text-sm text-gray-500 mt-1 mb-6">Caracteres: <span id="charCount">0</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mb-8 space-x-4">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-700 font-medium">Status:</span>
+                        <select id="statusSelect" class="btn btn-secondary">
+                            <option value="Atualização">💬 Atualização</option>
+                            <option value="Aberto" selected>🟡 Aberto</option>
+                            <option value="Fechado">🟢 Fechado</option>
+                        </select>
+                        <span class="text-gray-700 font-medium">Criticidade:</span>
+                        <select id="criticidadeSelect" class="btn btn-secondary">
+                            <option value="Baixa">🔄 Baixa</option>
+                            <option value="Média">⚠️ Média</option>
+                            <option value="Alta" selected>🚨 Alta</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button class="btn btn-primary" onclick="processarTexto()" title="Formatar" id="btnFormatar">
+                            <span class="material-icons mr-2 text-sm">format_paint</span>
+                            Formatar
+                        </button>
+                        <button class="btn btn-primary" onclick="copiarTexto()" id="btnCopiar" title="Copiar">
+                            <span class="material-icons mr-2 text-sm">content_copy</span>
+                            Copiar
+                        </button>
+                        <button class="btn btn-secondary" onclick="limparTexto()" title="Limpar">
+                            <span class="material-icons mr-2 text-sm">delete_sweep</span>
+                            Limpar
+                        </button>
+                    </div>
+                </div>
+                <div class="border-b border-gray-200 mb-6">
+                    <nav class="flex space-x-6 -mb-px">
+                        <button class="tab tab-active py-3 px-1 text-sm font-medium"
+                            onclick="mostrarSaida('resultado', event)">Comunicado Whatsapp</button>
+                        <button
+                            class="tab text-gray-500 hover:text-gray-700 hover:border-gray-300 py-3 px-1 text-sm font-medium"
+                            onclick="mostrarSaida('resultadoFormal', event)">Comunicado Email</button>
+                    </nav>
+                </div>
+                <div id="resultadoContainer"
+                    class="output-container active w-full h-64 p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 overflow-y-auto resize-y">
+                    <textarea id="resultado"
+                        class="w-full h-full bg-transparent border-none focus:ring-0 focus:outline-none resize-none"></textarea>
+                </div>
+                <div id="resultadoFormalContainer"
+                    class="output-container w-full h-64 p-4 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 overflow-y-auto resize-y"
+                    style="display:none;">
+                    <textarea id="resultadoFormal"
+                        class="w-full h-full bg-transparent border-none focus:ring-0 focus:outline-none resize-none"></textarea>
+                </div>
+            </div>
+
+            <footer class="w-full mt-8 text-center">
+                <small class="text-gray-400">Desenvolvido por Guilherme Godoy - © 2024</small>
+            </footer>
+
+        </main>
+    </div>
+    <script>
+        // --- JS igual ao seu, apenas adaptando para os novos elementos ---
+
+        function processarTexto() {
+            const input = document.getElementById('inputText').value.trim();
+            const resultado = document.getElementById('resultado');
+            const resultadoFormal = document.getElementById('resultadoFormal');
+            const statusSelect = document.getElementById('statusSelect');
+            const criticidadeSelect = document.getElementById('criticidadeSelect');
+            const statusValue = statusSelect.value;
+            const criticidadeValue = criticidadeSelect.value;
+
+            // Emojis de status para o formato padrão
+            let statusIcon = "💬";
+            if (statusValue === "Aberto") statusIcon = "🟡";
+            if (statusValue === "Fechado") statusIcon = "🟢";
+
+            // Emojis de criticidade para o formato padrão
+            let criticidadeIcon = "🔄";
+            if (criticidadeValue === "Média") criticidadeIcon = "⚠️";
+            if (criticidadeValue === "Alta") criticidadeIcon = "🚨";
+
+            if (!input) {
+                corrigirEmojisComunicado();
+                // Atualiza comunicado formal normalmente
+                let textoFormal = resultadoFormal.value;
+                textoFormal = textoFormal.replace(/^.*Status:.*$/m, `Status: ${statusValue}`);
+                textoFormal = textoFormal.replace(/^.*Criticidade:.*$/m, `Criticidade: ${criticidadeValue}`);
+                resultadoFormal.value = textoFormal.replace(/\*/g, '');
+                return;
+            }
+
+            document.getElementById('btnFormatar').classList.add('loading');
+
+            try {
+                // Extrair informações necessárias
+                const numeroIncidente = input.match(/INC\d+/)?.[0] || '';
+                const data = input.match(/Criado\n(\d{2}\/\d{2}\/\d{4})/)?.[1] || '';
+                const hora = input.match(/Criado\n\d{2}\/\d{2}\/\d{4}\s(\d{2}:\d{2})/)?.[1] || '';
+                const descricao = input.match(/Descreva a falha detalhadamente:\s*(.*?)(?:\n|$)/)?.[1] ||
+                    input.match(/Descreva detalhadamente o que está ocorrendo:\s*(.*?)(?:\n|$)/)?.[1] ||
+                    input.match(/Descrição da falha:\s*(.*?)(?:\n|$)/)?.[1] || '';
+                const area = input.match(/Informe sua área\/setor:\s*(.*?)(?:\n|$)/)?.[1] ||
+                    input.match(/Informe sua área\/setor \(Rua, prédio, sala, portão e ponto de referência\):\s*(.*?)(?:\n|$)/)?.[1] ||
+                    input.match(/Área\/Setor:\s*(.*?)(?:\n|$)/)?.[1] || '';
+
+                if (!numeroIncidente || !data || !hora) {
+                    throw new Error('Não foi possível encontrar todas as informações necessárias no texto.');
+                }
+
+                // Formato padrão (com emojis)
+                const comunicado = `*Número do incidente:* ${numeroIncidente}
+*${statusIcon}Status:* ${statusValue}
+*Data:* ${data}
+*Hora inicial:* ${hora}
+*Hora final:*
+
+*Descrição da ocorrência:* ${descricao}
+*📍Área afetada:* ${area}
+*⏳Impacto:*
+*${criticidadeIcon}Criticidade:* ${criticidadeValue}
+
+*Causa imediata:*
+*Solução:*
+
+*Equipes responsáveis:*
+*Especialistas acionados:*`;
+
+                // Formato formal (sem emojis, sem negrito, sem asteriscos)
+                let comunicadoFormal = `Número do incidente: ${numeroIncidente}
+Status: ${statusValue}
+Data: ${data}
+Hora inicial: ${hora}
+Hora final: 
+
+Descrição da ocorrência: ${descricao}
+Área afetada: ${area}
+Impacto: 
+Criticidade: ${criticidadeValue}
+
+Causa imediata: 
+Solução: 
+
+Equipes responsáveis: 
+Especialistas acionados: `;
+
+                setTimeout(() => {
+                    resultado.value = comunicado;
+                    resultadoFormal.value = comunicadoFormal.replace(/\*/g, '').trim();
+                    document.getElementById('btnFormatar').classList.remove('loading');
+                }, 500);
+
+            } catch (error) {
+                alert(`Erro ao processar o texto: ${error.message}`);
+                document.getElementById('btnFormatar').classList.remove('loading');
+            }
+        }
+
+        function mostrarSaida(id, event) {
+            document.querySelectorAll('.output-container').forEach(container => {
+                container.style.display = 'none';
+                container.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(button => {
+                button.classList.remove('tab-active');
+                // Adiciona as classes de estado inativo a todos os botões
+                button.classList.add('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            });
+            document.getElementById(id + 'Container').style.display = '';
+            document.getElementById(id + 'Container').classList.add('active');
+            event.currentTarget.classList.add('tab-active');
+            // Remove as classes de estado inativo do botão ativo
+            event.currentTarget.classList.remove('text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+        }
+
+
+        function copiarTexto() {
+            const activeContainer = document.querySelector('.output-container.active');
+            const resultado = activeContainer.querySelector('textarea');
+            if (!resultado.value) {
+                alert('Não há texto para copiar!');
+                return;
+            }
+            navigator.clipboard.writeText(resultado.value)
+                .then(() => {
+                    const btnCopiar = document.getElementById('btnCopiar');
+                    const originalText = btnCopiar.textContent;
+                    btnCopiar.textContent = 'Copiado!';
+                    setTimeout(() => {
+                        btnCopiar.textContent = originalText;
+                    }, 2000);
+                })
+                .catch(err => {
+                    alert('Erro ao copiar texto: ' + err);
+                });
+        }
+
+        function limparTexto() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('resultado').value = '';
+            document.getElementById('resultadoFormal').value = '';
+            document.getElementById('charCount').textContent = '0';
+            document.getElementById('statusSelect').value = 'Aberto';
+            document.getElementById('criticidadeSelect').value = 'Alta';
+        }
+
+        document.getElementById('inputText').addEventListener('input', function () {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        document.getElementById('statusSelect').addEventListener('change', atualizarStatusCriticidade);
+        document.getElementById('criticidadeSelect').addEventListener('change', atualizarStatusCriticidade);
+
+        function atualizarStatusCriticidade() {
+            const resultado = document.getElementById('resultado');
+            const resultadoFormal = document.getElementById('resultadoFormal');
+            let texto = resultado.value;
+            let textoFormal = resultadoFormal.value;
+
+            const statusValue = document.getElementById('statusSelect').value;
+            const criticidadeValue = document.getElementById('criticidadeSelect').value;
+
+            let statusIcon = "💬";
+            if (statusValue === "Aberto") statusIcon = "🟡";
+            if (statusValue === "Fechado") statusIcon = "🟢";
+
+            let criticidadeIcon = "🔄";
+            if (criticidadeValue === "Média") criticidadeIcon = "⚠️";
+            if (criticidadeValue === "Alta") criticidadeIcon = "🚨";
+
+            // Remove todas as linhas antigas de Status e Criticidade
+            texto = texto
+                .replace(/^\*?.*Status:.*$/m, '')
+                .replace(/^\*?.*Criticidade:.*$/m, '');
+
+            // Insere Status após "Número do incidente:"
+            texto = texto.replace(/(\*?Número do incidente:.*\n)/, `$1*${statusIcon}Status:* ${statusValue}\n`);
+            // Insere Criticidade após "Impacto:"
+            texto = texto.replace(/(\*?Impacto:.*\n)/, `$1*${criticidadeIcon}Criticidade:* ${criticidadeValue}\n`);
+
+            resultado.value = texto.trim();
+            corrigirEmojisComunicado();
+
+            // Formal: remove linhas antigas e insere novas
+            textoFormal = textoFormal
+                .replace(/^Status:.*$\n?/m, '')
+                .replace(/^Criticidade:.*$\n?/m, '');
+
+            // Insere Status após "Número do incidente:"
+            textoFormal = textoFormal.replace(/(Número do incidente:.*\n)/, `$1Status: ${statusValue}\n`);
+            // Insere Criticidade após "Impacto:"
+            textoFormal = textoFormal.replace(/(Impacto:.*\n)/, `$1Criticidade: ${criticidadeValue}\n`);
+
+            resultadoFormal.value = textoFormal.replace(/\*/g, '').trim();
+        }
+
+        function corrigirEmojisComunicado() {
+            const resultado = document.getElementById('resultado');
+            let texto = resultado.value;
+
+            const statusValue = document.getElementById('statusSelect').value;
+            const criticidadeValue = document.getElementById('criticidadeSelect').value;
+
+            let statusIcon = "💬";
+            if (statusValue === "Aberto") statusIcon = "🟡";
+            if (statusValue === "Fechado") statusIcon = "🟢";
+
+            let criticidadeIcon = "🔄";
+            if (criticidadeValue === "Média") criticidadeIcon = "⚠️";
+            if (criticidadeValue === "Alta") criticidadeIcon = "🚨";
+
+            const areaIcon = "📍";
+            const impactoIcon = "⏳";
+
+            // Substitui toda a linha de Status
+            texto = texto.replace(/^\*?.*Status:.*$/m, `*${statusIcon}Status:* ${statusValue}`);
+
+            // Substitui toda a linha de Criticidade
+            texto = texto.replace(/^\*?.*Criticidade:.*$/m, `*${criticidadeIcon}Criticidade:* ${criticidadeValue}`);
+
+            // Corrige ou insere Área afetada (preserva conteúdo)
+            if (texto.match(/^\*?.*Área afetada:.*$/m)) {
+                texto = texto.replace(/^\*?.*Área afetada:\*?(.*)$/m, `*${areaIcon}Área afetada:*$1`);
+            } else {
+                texto = texto.replace(/(\*?Descrição da ocorrência:.*(?:\n.*)?)/m, `$1\n*${areaIcon}Área afetada:*`);
+            }
+
+            // Corrige ou insere Impacto (preserva conteúdo)
+            if (texto.match(/^\*?.*Impacto:.*$/m)) {
+                texto = texto.replace(/^\*?.*Impacto:\*?(.*)$/m, `*${impactoIcon}Impacto:*$1`);
+            } else {
+                texto = texto.replace(/(\*?Área afetada:.*(?:\n.*)?)/m, `$1\n*${impactoIcon}Impacto:*`);
+            }
+
+            resultado.value = texto;
+        }
+
+        // Atalhos de teclado
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                processarTexto();
+            }
+            if (e.ctrlKey && e.key === 'l') {
+                limparTexto();
+            }
+            if (e.ctrlKey && e.key === 'c' && document.getElementById('resultado').value) {
+                copiarTexto();
+            }
+        });
+
+        document.getElementById('inputText').addEventListener('paste', function () {
+            setTimeout(() => {
+                processarTexto();
+            }, 10);
+        });
+
+        function processarComunicadoColado(texto) {
+            // Função para limpar asteriscos e espaços
+            function clean(val) {
+                return (val || '').replace(/\*/g, '').replace(/^[:\s\/]+|[:\s\/]+$/g, '').trim();
+            }
+            const incidente = clean((texto.match(/Número do incidente: ?([A-Z0-9]+)/i) || [, ''])[1]);
+            const status = clean((texto.match(/Status: ?([^\n]+)/i) || [, ''])[1]);
+            const data = clean((texto.match(/Data: ?([^\n]+)/i) || [, ''])[1]);
+            const horaInicial = clean((texto.match(/Hora inicial: ?([^\n]+)/i) || [, ''])[1]);
+            const horaFinal = clean((texto.match(/Hora final: ?([^\n]+)/i) || [, ''])[1]);
+            const descricao = clean((texto.match(/Descrição da ocorrência: ?([^\n]+)/i) || [, ''])[1]);
+            const area = clean((texto.match(/Área afetada: ?([^\n]+)/i) || [, ''])[1]);
+            const impacto = clean((texto.match(/Impacto: ?([^\n]+)/i) || [, ''])[1]);
+            const criticidade = clean((texto.match(/Criticidade: ?([^\n]+)/i) || [, ''])[1]);
+            const causa = clean((texto.match(/Causa imediata: ?([^\n]+)/i) || [, ''])[1]);
+            const solucao = clean((texto.match(/Solução: ?([^\n]+)/i) || [, ''])[1]);
+            const equipes = clean((texto.match(/Equipes responsáveis: ?([^\n]+)/i) || [, ''])[1]);
+            const especialistas = clean((texto.match(/Especialistas acionados: ?([^\n]+)/i) || [, ''])[1]);
+
+            // Emojis conforme status/criticidade
+            let emojiStatus = '🟡';
+            if (status.toLowerCase().includes('fechado')) emojiStatus = '✅';
+            if (status.toLowerCase().includes('em andamento')) emojiStatus = '🟠';
+            let emojiCriticidade = '🚨';
+
+            // Comunicado padrão (WhatsApp)
+            const comunicadoPadrao =
+                `*Número do incidente:* ${incidente}
+*${emojiStatus}Status:* ${status}
+*Data:* ${data}
+*Hora inicial:* ${horaInicial}
+*Hora final:* ${horaFinal}
+
+*Descrição da ocorrência:* ${descricao}
+*📍Área afetada:* ${area}
+*⏳Impacto:* ${impacto}
+*${emojiCriticidade}Criticidade:* ${criticidade}
+
+*Causa imediata:* ${causa}
+*Solução:* ${solucao}
+
+*Equipes responsáveis:* ${equipes}
+*Especialistas acionados:* ${especialistas}`;
+
+            // Comunicado formal (e-mail) - só inclui campo se houver valor
+            function campo(label, valor) {
+                return valor ? `${label}: ${valor}` : `${label}:`;
+            }
+            const comunicadoFormal = [
+                campo('Número do incidente', incidente),
+                campo('Status', status),
+                campo('Data', data),
+                campo('Hora inicial', horaInicial),
+                campo('Hora final', horaFinal),
+                '',
+                campo('Descrição da ocorrência', descricao),
+                campo('Área afetada', area),
+                campo('Impacto', impacto),
+                campo('Criticidade', criticidade),
+                '',
+                campo('Causa imediata', causa),
+                campo('Solução', solucao),
+                '',
+                campo('Equipes responsáveis', equipes),
+                campo('Especialistas acionados', especialistas)
+            ].join('\n');
+
+            // Remove emojis do comunicado formal
+            // Lista de emojis usados no comunicado
+            const EMOJIS = /[🟡✅🟠🚨📍⏳]/g;
+
+            // Remove asteriscos e todos os emojis conhecidos
+            const comunicadoFormalLimpo = comunicadoFormal
+                .replace(/\*/g, '')
+                .replace(EMOJIS, '');
+
+            // Exibe nos campos
+            document.getElementById('resultado').value = comunicadoPadrao;
+            document.getElementById('resultadoFormal').value = comunicadoFormalLimpo;
+        }
+
+        // Exemplo de uso: ao colar no textarea principal
+        document.getElementById('resultado').addEventListener('paste', function (e) {
+            e.preventDefault();
+            const texto = (e.clipboardData || window.clipboardData).getData('text');
+            processarComunicadoColado(texto);
+        });
+    </script>
+</body>
+
+</html>
